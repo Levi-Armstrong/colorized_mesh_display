@@ -1,87 +1,70 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(colorized_mesh_display)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-find_package(catkin REQUIRED COMPONENTS
-  pcl_conversions
-  pcl_msgs
-  pcl_ros
-  rviz
-)
+find_package(rclcpp REQUIRED)
+find_package(pcl_conversions REQUIRED)
+find_package(pcl_msgs REQUIRED)
+find_package(pcl_ros REQUIRED)
+find_package(rviz_common REQUIRED)
 
 find_package(Qt5 ${rviz_QT_VERSION} EXACT REQUIRED Widgets)
 add_definitions(-DQT_NO_KEYWORDS)
-
-catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    pcl_conversions
-    pcl_msgs
-    pcl_ros
-    rviz
-)
 
 ###########
 ## Build ##
 ###########
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
-# QMOC
-qt5_wrap_cpp(MOC_FILES
-  include/${PROJECT_NAME}/colorized_mesh_display.h
-)
-
 ## Colorized Mesh Shape Library
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
+  include/${PROJECT_NAME}/colorized_mesh_display.h
   src/colorized_mesh_visual.cpp
-  ${MOC_FILES}
   src/colorized_mesh_display.cpp
 )
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  Qt5::Widgets
-)
+target_link_libraries(${PROJECT_NAME} PUBLIC Qt5::Widgets)
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                                                  "$<INSTALL_INTERFACE:include>")
+ament_target_dependencies(${PROJECT_NAME} PUBLIC
+  rclcpp
+  pcl_conversions
+  pcl_msgs
+  pcl_ros
+  rviz_common)
 
 # Test Node
-add_executable(${PROJECT_NAME}_test_node
-  src/colorized_mesh_display_test.cpp
-)
-target_link_libraries(${PROJECT_NAME}_test_node
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+add_executable(${PROJECT_NAME}_test_node src/colorized_mesh_display_test.cpp)
+target_link_libraries(${PROJECT_NAME}_test_node ${PROJECT_NAME})
+ament_target_dependencies(${PROJECT_NAME}_test_node
+  rclcpp
+  pcl_conversions
+  pcl_msgs
+  pcl_ros
+  rviz_common)
 
 #############
 ## Install ##
 #############
+
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets DESTINATION lib)
+ament_export_targets(${PROJECT_NAME}-targets HAS_LIBRARY_TARGET)
+
+# install library
 install(
-  DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
+  TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_test_node
+  EXPORT ${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+  INCLUDES
+  DESTINATION include)
 
-install(
-  TARGETS
-    ${PROJECT_NAME}
-    ${PROJECT_NAME}_test_node
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+install(DIRECTORY icons DESTINATION share/${PROJECT_NAME}/)
 
-install(DIRECTORY icons
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
-install(FILES plugin_description.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+pluginlib_export_plugin_description_file(rviz_common plugin_description.xml)
+ament_package()

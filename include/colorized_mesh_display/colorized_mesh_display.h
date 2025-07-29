@@ -1,20 +1,15 @@
 #ifndef COLORIZED_MESH_DISPLAY_H
 #define COLORIZED_MESH_DISPLAY_H
 
-#include <rviz/message_filter_display.h>
-#include <pcl_msgs/PolygonMesh.h>
-
-namespace Ogre
-{
-class SceneNode;
-}
+#include <rviz_common/message_filter_display.hpp>
+#include <pcl_msgs/msg/polygon_mesh.hpp>
 
 namespace colorized_mesh_display
 {
 
 class ColorizedMeshVisual;
 
-class ColorizedMeshDisplay : public rviz::MessageFilterDisplay<pcl_msgs::PolygonMesh>
+class ColorizedMeshDisplay : public rviz_common::MessageFilterDisplay<pcl_msgs::msg::PolygonMesh>
 {
   Q_OBJECT
 
@@ -26,13 +21,13 @@ public:
 
 protected:
 
-  virtual void onInitialize() override;
+  void onInitialize() override;
 
-  virtual void reset() override;
+  void reset() override;
 
 private:
 
-  void processMessage(const pcl_msgs::PolygonMeshConstPtr& msg) override;
+  void processMessage(std::shared_ptr<const pcl_msgs::msg::PolygonMesh> msg) override;
 
   std::shared_ptr<ColorizedMeshVisual> visual_;
 

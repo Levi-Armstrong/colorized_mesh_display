@@ -2,11 +2,14 @@
 #include <OgreManualObject.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
+#include <OgreSceneManager.h>
+#include <OgreVector3.h>
 #include <boost/lexical_cast.hpp>
 
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/PolygonMesh.h>
 
 static uint32_t count = 0;
 

@@ -1,21 +1,11 @@
 #ifndef COLORIZED_MESH_VISUAL_H
 #define COLORIZED_MESH_VISUAL_H
 
-#include <pcl/PolygonMesh.h>
+#include <OgrePrerequisites.h>
 
-namespace Ogre
+namespace pcl
 {
-class Vector3;
-class Quaternion;
-class SceneNode;
-class SceneManager;
-class ManualObject;
-class Entity;
-}
-
-namespace rviz
-{
-class MeshShape;
+struct PolygonMesh;
 }
 
 namespace colorized_mesh_display
@@ -38,13 +28,13 @@ public:
 
 private:
 
-  Ogre::SceneManager* scene_manager_;
+  Ogre::SceneManager* scene_manager_{ nullptr };
 
-  Ogre::SceneNode* frame_node_;
+  Ogre::SceneNode* frame_node_{ nullptr };
 
-  Ogre::ManualObject* manual_object_;
+  Ogre::ManualObject* manual_object_{ nullptr };
 
-  Ogre::Entity* entity_;
+  Ogre::Entity* entity_{ nullptr };
 
   std::string material_name_;
 };
