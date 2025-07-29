@@ -14,27 +14,21 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - {CI_NAME: Xenial-Build,
+          - {CI_NAME: Noble-Build,
              OS_NAME: ubuntu,
-             OS_CODE_NAME: xenial,
-             ROS_DISTRO: kinetic,
+             OS_CODE_NAME: noble,
+             ROS_DISTRO: jazzy,
              ROS_REPO: main,
-             DOCKER_IMAGE: "ros:kinetic"}
-          - {CI_NAME: Bionic-Build,
+             DOCKER_IMAGE: "ros:jazzy"}
+          - {CI_NAME: Jammy-Build,
              OS_NAME: ubuntu,
-             OS_CODE_NAME: bionic,
-             ROS_DISTRO: melodic,
+             OS_CODE_NAME: jammy,
+             ROS_DISTRO: humble,
              ROS_REPO: main,
-             DOCKER_IMAGE: "ros:melodic"}
-          - {CI_NAME: Focal-Build,
-             OS_NAME: ubuntu,
-             OS_CODE_NAME: focal,
-             ROS_DISTRO: noetic,
-             ROS_REPO: main,
-             DOCKER_IMAGE: "ros:noetic"}
+             DOCKER_IMAGE: "ros:humble"}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: 'ros-industrial/industrial_ci@master'
         env: ${{matrix.env}}
         
